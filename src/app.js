@@ -12,7 +12,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/events", eventRoute);
 
 app.get("/", (_, res) => {
-  res.json({
+  res.status(200).json({
     message: "Welcome to Eventful API",
   });
 });

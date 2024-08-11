@@ -5,12 +5,16 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const startServer = async () => {
-  await mongoose.connect(config.databaseUrl);
-  console.log("DB connected");
+  try {
+    await mongoose.connect(config.databaseUrl);
+    console.log("DB connected");
 
-  app.listen(config.serverPort, () => {
-    console.log("Server is running on port: ", config.serverPort);
-  });
+    app.listen(config.serverPort, () => {
+      console.log("Server is running on port: ", config.serverPort);
+    });
+  } catch (error) {
+    console.log("DATABASE_ERROR: ", error.message);
+  }
 };
 
 startServer();
