@@ -135,7 +135,7 @@ class EventService {
         });
 
       return {
-        message: "Book events",
+        message: "All user booked events",
         data: bookEvents,
       };
     } catch (error) {
@@ -151,7 +151,7 @@ class EventService {
       const eventCreated = await this.model.find({ creator: userId });
 
       return {
-        message: "Events created",
+        message: "User events list",
         data: eventCreated,
       };
     } catch (error) {

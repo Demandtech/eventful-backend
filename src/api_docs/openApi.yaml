@@ -1,0 +1,502 @@
+openapi: 3.0.0
+info:
+  title: Eventful
+  version: 1.0.0
+  description: Eventful API documentation
+  contact:
+    email: rasheedadekunle91@gmail.com
+    name: Rasheed Adekunle
+    url: https://github.com/demandtech
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:5000
+    description: Local server
+  - url: https://eventful-backend.vercel.app
+    description: Live server
+paths:
+  /api/v1/auth/register:
+    post:
+      description: Create new User account
+      operationId: create-user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Register"
+      responses:
+        "201":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Account registration successful"
+                  data:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User with email already exists"
+        "422":
+          description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Input first_name is required"
+                  errors:
+                    type: string
+                    example: "Input first_name cannot be empty"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
+  /api/v1/auth/login:
+    post:
+      operationId: user-login
+      description: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Login"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login successfully"
+                  data:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid email or password"
+        "422":
+          description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Input password is required"
+                  errors:
+                    type: string
+                    example: "Password should be 8 or more characters"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
+  /api/v1/events:
+    post:
+      summary: Create event
+      description: Create new event
+      operationId: get-user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEvent"
+      responses:
+        "201":
+          description: Event created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Event created successfully"
+                  data:
+                    $ref: "#/components/schemas/Event"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "422":
+          description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid event data"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+    get:
+      description: User created events
+      operationId: create-event
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User events list"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
+  /api/v1/events/upcoming:
+    get:
+      description: All upcoming events
+      operationId: upcoming-events
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Upcoming events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Upcoming events"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Event"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
+  /api/v1/events/{eventId}:
+    get:
+      description: Single and shareable event
+      operationId: single-shareable-event
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookEvent"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Event not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
+  /api/v1/events/{eventId}/booking:
+    post:
+      description: Book an event
+      operationId: book-event
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Event booked successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookEvent"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Event not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
+  /api/v1/events/user/bookings:
+    get:
+      description: User booked events
+      operationId: user-booked-events
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: All user booked events retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "All user booked events"
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BookEvent"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Register:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+        - password
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    CreateEvent:
+      type: object
+      required:
+        - name
+        - description
+        - date
+        - time
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+          format: time
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+        time:
+          type: string
+          format: time
+    BookEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        ticket_number:
+          type: string
+        event:
+          $ref: "#/components/schemas/Event"
+        attendee:
+          $ref: "#/components/schemas/User"
+        creator:
+          $ref: "#/components/schemas/User"
+        qrCodeUrl:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string

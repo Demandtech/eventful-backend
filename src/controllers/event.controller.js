@@ -9,6 +9,7 @@ class EventController {
     this.userBookEvents = this.userBookEvents.bind(this);
     this.userEvents = this.userEvents.bind(this);
     this.eventAttendee = this.eventAttendee.bind(this);
+    this.singleEvent = this.singleEvent.bind(this);
   }
 
   async createEvent(req, res) {
@@ -106,6 +107,24 @@ class EventController {
       }
 
       const result = await this.service.eventAttendee(eventId, userId);
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(error.status || 500).json({
+        message: error.message || "An error occured, please try again later!",
+      });
+    }
+  }
+
+  async singleEvent(req, res) {
+    try {
+      const { eventId } = req.params;
+
+      if (!eventId) {
+        res.status(400).json({ message: "Event Id params is required" });
+      }
+
+      const result = await this.service.singleEvent(eventId);
 
       res.status(200).json(result);
     } catch (error) {
