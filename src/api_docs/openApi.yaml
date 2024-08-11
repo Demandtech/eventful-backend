@@ -13,7 +13,7 @@ info:
 servers:
   - url: http://localhost:5000
     description: Local server
-  - url: https://eventful-backend.vercel.app
+  - url: https://eventfulbackend.hostless.app
     description: Live server
 paths:
   /api/v1/auth/register:
@@ -285,7 +285,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/BookEvent"
+                $ref: "#/components/schemas/Event"
         "400":
           description: Bad request
           content:
@@ -408,6 +408,61 @@ paths:
                   message:
                     type: string
                     example: "An error occurred, please try again later!"
+
+  /api/v1/events/{ticketNumber}/confirm:
+    get:
+      description: Ticket confirmation
+      operationId: confirm-ticket
+      parameters:
+        - name: ticketNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ticket is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: 
+                    type: string
+                    example: Ticket is valid
+                  data:
+                    $ref: "#/components/schemas/BookEvent"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Event not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+
 components:
   securitySchemes:
     bearerAuth:

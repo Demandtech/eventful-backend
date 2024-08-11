@@ -10,6 +10,7 @@ const eventRoute = Router();
 
 // Single and Shareable event
 eventRoute.get("/:eventId", eventController.singleEvent);
+eventRoute.get("/:ticketNumber/confirm", eventController.eventByTicket);
 
 eventRoute.use(authMiddleware);
 eventRoute.post(

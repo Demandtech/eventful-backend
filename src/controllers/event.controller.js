@@ -10,6 +10,7 @@ class EventController {
     this.userEvents = this.userEvents.bind(this);
     this.eventAttendee = this.eventAttendee.bind(this);
     this.singleEvent = this.singleEvent.bind(this);
+    this.eventByTicket = this.eventByTicket.bind(this);
   }
 
   async createEvent(req, res) {
@@ -36,6 +37,7 @@ class EventController {
       });
     }
   }
+
   async allActiveEvents(_, res) {
     try {
       const result = await this.service.allActiveEvents();
@@ -125,6 +127,24 @@ class EventController {
       }
 
       const result = await this.service.singleEvent(eventId);
+
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(error.status || 500).json({
+        message: error.message || "An error occured, please try again later!",
+      });
+    }
+  }
+
+  async eventByTicket(req, res) {
+    try {
+      const { ticketNumber } = req.params;
+
+      if (!ticketNumber) {
+        res.status(400).json({ message: "Event Id params is required" });
+      }
+
+      const result = await this.service.eventByTicket(ticketNumber);
 
       res.status(200).json(result);
     } catch (error) {

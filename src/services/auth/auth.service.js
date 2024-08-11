@@ -24,7 +24,7 @@ export default class AuthServices {
         last_name,
         email,
         password: hashPassword,
-      });
+      })
 
       await newUser.save();
 
@@ -49,28 +49,24 @@ export default class AuthServices {
 
   async login({ email, password }) {
     try {
-      const user = await this.model.findOne({ email });
+      const user = await this.model.findOne({ email }).lean();
       const passwordMatch = await bcrypt.compare(password, user?.password);
-
-      console.log(passwordMatch)
 
       if (!user || !passwordMatch) {
         throw new ErrorWithStatus("email or password is incorrect", 400);
       }
 
-      const userObj = user.toObject();
+      delete user.password;
+      delete user.__v
 
-      delete userObj.password;
-
-      const token = generateToken(userObj);
+      const token = generateToken(user);
 
       return {
         message: "Login Successfully",
         access_token: token,
-        data: userObj,
+        data: user,
       };
     } catch (err) {
-    
       throw new ErrorWithStatus(
         err.message || "Internal server error, try again later",
         err.status || 500

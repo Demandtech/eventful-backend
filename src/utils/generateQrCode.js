@@ -2,7 +2,8 @@ import QRCode from "qrcode";
 
 const generateQrCode = async (text) => {
   try {
-    const data = await QRCode.toDataURL(text);
+    const url = `http://localhost/5500/${text}/confirm`;
+    const data = await QRCode.toDataURL(url);
 
     return data;
   } catch (err) {

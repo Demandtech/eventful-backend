@@ -90,15 +90,13 @@ class EventService {
         .toString("hex")
         .toUpperCase()}`;
 
-      const qrCode = await generateQrCode(
-        `Booking for ${event.name} by ${event.creator.first_name} ${event.creator.last_name}`
-      );
+      const qrCode = await generateQrCode(ticket_number);
 
       const booking = new this.bookModel({
         event: eventId,
         ticket_number,
         attendee: userId,
-        creator: event.creator,
+        creator: event.creator._id,
         qrCodeUrl: qrCode,
       });
 
@@ -111,6 +109,10 @@ class EventService {
         })
         .populate({
           path: "attendee",
+          select: "-password",
+        })
+        .populate({
+          path: "creator",
           select: "-password",
         });
 
@@ -168,11 +170,11 @@ class EventService {
         .find({ event: eventId, creator: userId })
         .populate({
           path: "attendee",
-          select: "-password",
+          select: "-password -__v -createdAt -updatedAt",
         })
         .populate({
           path: "creator",
-          select: "-password",
+          select: "-password -__v -createdAt -updatedAt",
         });
 
       return {
@@ -189,15 +191,62 @@ class EventService {
 
   async singleEvent(eventId) {
     try {
-      const event = await this.model.findById(eventId).populate("creator");
+      const event = await this.model
+        .findById(eventId)
+        .populate({
+          path: "creator",
+          select: "-password -__v -createdAt -updatedAt",
+        })
+        .lean();
 
       if (!event) {
         throw new this.errorResponse("Event not found", 404);
       }
 
+      delete event.__v;
+
       return {
         message: "Single event",
         data: event,
+      };
+    } catch (error) {
+      throw new this.errorResponse(
+        error.message || "An error occured, please try again later!",
+        error.status || 500
+      );
+    }
+  }
+
+  async eventByTicket(ticketNumber) {
+    try {
+      const event = await this.bookModel
+        .findOne({
+          ticket_number: ticketNumber,
+        })
+        .populate({
+          path: "event",
+          select: "-__v -creator",
+        })
+        .populate({
+          path: "creator",
+          select: "-password -__v -createdAt -updatedAt",
+        })
+        .populate({
+          path: "attendee",
+          select: "-password -__v -createdAt -updatedAt",
+        })
+        .lean();
+
+      if (!event) {
+        throw new ErrorWithStatus("Event not found", 404);
+      }
+
+      delete event.qrCodeUrl;
+      delete event.__v;
+
+      return {
+        message: "Ticket is valid",
+        date: event,
       };
     } catch (error) {
       throw new this.errorResponse(
