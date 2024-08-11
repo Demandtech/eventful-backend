@@ -1,6 +1,8 @@
 import config from "../config/configs.js";
 import mongoose from "mongoose";
 import app from "./app.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const startServer = async () => {
   await mongoose.connect(config.databaseUrl);
