@@ -3,18 +3,21 @@ import { EventModel, BookEventModel } from "../../models/event.model.js";
 import UserModel from "../../models/user.model.js";
 import crypto from "crypto";
 import generateQrCode from "../../utils/generateQrCode.js";
+import scheduleEventReminder from "../../utils/scheduleReminder.js";
 
 class EventService {
   constructor(
     eventModel = EventModel,
     bookModel = BookEventModel,
     errorResponse = ErrorWithStatus,
-    userModel = UserModel
+    userModel = UserModel,
+    reminderSheduler = scheduleEventReminder
   ) {
     this.model = eventModel;
     this.bookModel = bookModel;
     this.errorResponse = errorResponse;
     this.userModel = userModel;
+    this.reminder = reminderSheduler;
   }
 
   async createEvent({ userId, name, desc, date, time }) {
@@ -115,7 +118,7 @@ class EventService {
           path: "creator",
           select: "-password",
         });
-
+      this.reminder(populatedBooking);
       return {
         message: "Booking successful",
         data: populatedBooking,
