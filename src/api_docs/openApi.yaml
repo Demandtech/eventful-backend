@@ -427,7 +427,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  message: 
+                  message:
                     type: string
                     example: Ticket is valid
                   data:
@@ -452,6 +452,158 @@ paths:
                   message:
                     type: string
                     example: "Event not found"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+  /api/v1/reminder:
+    get:
+      description: User reminders
+      operationId: user-reminder
+      responses:
+        "200":
+          description: all user reminders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ticket is valid
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BookEvent"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+    put:
+      description: Update reminder
+      operationId: update-reminder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reminderId:
+                  type: string
+                  example: 66bb2b1cf6c863eb941a5acf
+                isRead:
+                  type: boolean
+                  example: false
+      responses:
+        "200":
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Reminder is read successfully"
+                  data:
+                    $ref: "#/components/schemas/Reminder"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "422":
+          description: Unprocessable content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validation error"
+                  errors:
+                    type: string
+                    example: "Input reminder cannot be empty"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An error occurred, please try again later!"
+  /api/v1/reminder/{reminderId}:
+    delete:
+      description: Delete reminder
+      operationId: delete-reminder
+      parameters:
+        - name: reminderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Reminder deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reminder deleted successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bad request"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Reminder not found"
         "500":
           description: Internal server error
           content:
@@ -517,7 +669,7 @@ components:
     Event:
       type: object
       properties:
-        id:
+        _id:
           type: string
         name:
           type: string
@@ -529,10 +681,16 @@ components:
         time:
           type: string
           format: time
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
     BookEvent:
       type: object
       properties:
-        id:
+        _id:
           type: string
         ticket_number:
           type: string
@@ -544,10 +702,16 @@ components:
           $ref: "#/components/schemas/User"
         qrCodeUrl:
           type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
     User:
       type: object
       properties:
-        id:
+        _id:
           type: string
         first_name:
           type: string
@@ -555,3 +719,26 @@ components:
           type: string
         email:
           type: string
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date
+    Reminder:
+      type: object
+      properties:
+        _id:
+          type: string
+        receiver:
+          $ref: "#/components/schemas/User"
+        message:
+          type: string
+        event:
+          $ref: "#components/schemas/Event"
+        createdAt:
+          type: string
+          format: date
+        updatedAt:
+          type: string
+          format: date

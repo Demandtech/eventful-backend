@@ -27,9 +27,9 @@ class ReminderService {
       throw error;
     }
   }
-  async updateReminder(id, userId) {
+  async updateReminder({ reminderId, userId, updatedValue }) {
     try {
-      const reminder = await this.reminder.findOne({ _id: id });
+      const reminder = await this.reminder.findOne({ _id: reminderId });
 
       if (!reminder) {
         throw new this.errorResponse("Reminder not found", 404);
@@ -39,13 +39,11 @@ class ReminderService {
         throw new this.errorResponse("Not authorize to perform operation", 403);
       }
 
-      reminder.isRead = true;
-
-      const updatedReminder = await reminder.save();
+      const latestReminder = Object.assign(reminder, updatedValue);
 
       return {
         message: "Reminder is read successfully",
-        data: updatedReminder,
+        data: latestReminder,
       };
     } catch (error) {
       throw new this.errorResponse(
@@ -58,10 +56,6 @@ class ReminderService {
     try {
       const reminder = await this.reminder.findByIdAndDelete(id);
 
-      // if (!reminder) {
-      //   throw new this.errorResponse("Reminder not found", 404);
-      // }
-
       if (reminder.receiver !== userId) {
         throw new this.errorResponse("Not authorize to perform operation", 403);
       }
@@ -69,6 +63,22 @@ class ReminderService {
       return {
         message: "Reminder deleted successfully",
         data: null,
+      };
+    } catch (error) {
+      throw new this.errorResponse(
+        error.message || "An error occured, please try again later!",
+        error.status || 500
+      );
+    }
+  }
+
+  async allUserReminders(userId) {
+    try {
+      const reminders = await this.reminder.find({ receiver: userId });
+
+      return {
+        message: "user reminders",
+        data: reminders,
       };
     } catch (error) {
       throw new this.errorResponse(

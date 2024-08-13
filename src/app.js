@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use(requestLogger);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/events", eventRoute);
-app.use("/api/v1/reminder", reminderRoute);
+app.use("/api/v1/reminders", reminderRoute);
 
 app.get("/", (_, res) => {
   res.status(200).json({

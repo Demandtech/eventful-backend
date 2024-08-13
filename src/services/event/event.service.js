@@ -23,6 +23,7 @@ class EventService {
   async createEvent({ userId, name, desc, date, time }) {
     try {
       const user = await this.userModel.findById(userId);
+
       const existingEvent = await this.model.findOne({
         creator: userId,
         name,
@@ -32,6 +33,13 @@ class EventService {
 
       if (existingEvent) {
         throw new this.errorResponse("Event is already running", 400);
+      }
+
+      const currentDate = new Date();
+      const eventDate = new Date(date);
+
+      if (eventDate < currentDate) {
+        throw new this.errorResponse("Event date must be in the future", 400);
       }
 
       if (!user) {
